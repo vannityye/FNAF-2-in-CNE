@@ -3,6 +3,7 @@ import openfl.system.Capabilities;
 import funkin.backend.MusicBeatState;
 import funkin.backend.system.framerate.Framerate;
 import flixel.system.scaleModes.FillScaleMode;
+import funkin.backend.utils.DiscordUtil;
 
 var fillMode:Bool = true;
 
@@ -16,6 +17,8 @@ function new() {
 
     windowShit(1024, 768, 0.715);
     FlxG.mouse.visible = true;
+    DiscordUtil.init();
+    DiscordUtil.changePresence(null, null);
 }
 
 function postStateSwitch()
