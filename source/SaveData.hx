@@ -7,9 +7,10 @@ using StringTools;
 
 class SaveData
 {
-    public static var path:String = 'mods/${ModsFolder.currentModFolder}/data/save.txt';
+    public static var path:String = '${Paths.getAssetsRoot()}/data/save.txt';
     private static var data:StringMap<String> = new StringMap();
 
+    // you know what i hate THE FUCKING SAVE TEXT DOESN'T FOLLOW THE ORDER OF THIS
     private static var defaults = {
         night: '1',
         sixthNightUnlocked: 'false',
@@ -107,18 +108,12 @@ class SaveData
 
         for (key in Reflect.fields(defaults))
         {
-            if (data.exists(key))
-                output.push(key + '=' + data.get(key));
-        }
-
-        for (key => value in data)
-        {
-            if (!Reflect.hasField(defaults, key))
-                output.push(key + '=' + value);
+            var value:String = data.exists(key) ? data.get(key) : Reflect.field(defaults, key);
+            output.push(key + '=' + value);
         }
 
         File.saveContent(path, output.join('\n'));
-    }
+    }   
 
     public static function reset():Void
     {
