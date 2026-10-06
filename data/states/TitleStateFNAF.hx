@@ -27,8 +27,9 @@ var news:FunkinSprite;
 
 var arrow:FunkinSprite;
 
-var titleTimer:FlxTimer;
 var randomTmr:FlxTimer;
+var alphaTmr:FlxTimer;
+var twitchTmr:FlxTimer;
 var transitionTmr:FlxTimer;
 
 var nightNumber:Int;
@@ -42,6 +43,7 @@ var canSelect:Bool = true;
 var canSkip:Bool = false;
 var selectedNewGame:Bool = false;
 var transitioning:Bool = false;
+var canFlicker = true;
 
 var deleteFrames:Int;
 
@@ -72,18 +74,25 @@ function create()
                 animatronics.animation.play('normal');
         };
 
-        titleTimer = new FlxTimer().start(0.5, function(timer:FlxTimer)
+        alphaTmr = new FlxTimer().start(0.3, function(timer:FlxTimer)
         {
             animatronics.alpha = FlxG.random.float(0.1, 1);
-            playRandomTitleAnimation();
-            timer.reset(0.5);
+            timer.reset(0.3);
         });
 
-        randomTmr = new FlxTimer().start(FlxG.random.float(0.5, 1), function(timer:FlxTimer)
+        twitchTmr = new FlxTimer().start(0.1, function(timer:FlxTimer)
+        {
+            if (FlxG.random.int(1, 50) == 1)
+                playRandomTitleAnimation();
+
+            timer.reset(0.1);
+        });
+
+        randomTmr = new FlxTimer().start(FlxG.random.float(0.3, 0.5), function(timer:FlxTimer)
         {
             playBlip();
-            cameraBlip.visible = FlxG.random.bool(80);
-            timer.reset(FlxG.random.float(0.5, 1));
+            cameraBlip.visible = FlxG.random.bool(50);
+            timer.reset(FlxG.random.float(0.3, 0.5));
         });
     }
     
@@ -294,6 +303,13 @@ function transition()
 {
     SaveData.setInt('night', 1);
     SaveData.save();
+
+    alphaTmr.cancel();
+    twitchTmr.cancel();
+    randomTmr.cancel();
+
+    staticSprite.animation.pause();
+    cameraBlip.animation.pause();
 
     FlxTween.tween(news, {alpha: 1}, 2, {
         onComplete: function(_)
